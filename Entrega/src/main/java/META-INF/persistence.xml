@@ -8,8 +8,8 @@ http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd"
 		<provider>org.hibernate.ejb.HibernatePersistence</provider>
 		<properties>
 			<property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost/unopar" />
-			<property name="javax.persistence.jdbc.user" value="root" />
-			<property name="javax.persistence.jdbc.password" value="alex123" />
+			<property name="javax.persistence.jdbc.user" value="comercial" />
+			<property name="javax.persistence.jdbc.password" value="pgcadmin" />
 			<property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver" />
 			<property name="hibernate.dialect" value="org.hibernate.dialect.MySQL5Dialect" />
 			<property name="hibernate.show_sql" value="true" />
