@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<ui:composition template="/WEB-INF/template/Layout.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" xmlns:o="http://omnifaces.org/ui"
+	xmlns:t="http://myfaces.apache.org/tomahawk">
+	<f:metadata>
+		<o:viewParam name="id" value="#{cadastroProdutoBean.produto}" />
+		<f:viewAction action="#{cadastroProdutoBean.prepararCadastro}" />
+	</f:metadata>
+	<ui:define name="titulo">Cadastro de Produtos</ui:define>
+	<ui:define name="corpo">
+		<h1>Cadastro de Produtos</h1>
+		<h:form id="formUnidade">
+			<p:messages showDetail="false" showSummary="true" autoUpdate="true" />
+			<p:fieldset legend="Dados do Produto" toggleable="true"
+				toggleablespeed="500">
+				<p:ajax event="toggle" />
+				<t:panelGrid columns="4">
+					<t:panelGroup>
+						<p:outputLabel value="Nome" for="nome" />
+					</t:panelGroup>
+					<t:panelGroup>
+						<h:inputText id="nome" maxlength="240" size="40"
+							value="#{cadastroProdutoBean.produto.nome}" label="Nome">
+						</h:inputText>
+					</t:panelGroup>
+					<t:panelGroup>
+						<p:outputLabel value="Valor" for="valor" />
+					</t:panelGroup>
+					<t:panelGroup>
+						<h:inputText size="12" id="valor"
+							value="#{cadastroProdutoBean.produto.valor}" label="Valor">
+							<f:convertNumber locale="pt_BR" maxFractionDigits="2"
+								minFractionDigits="2" />
+						</h:inputText>
+					</t:panelGroup>
+
+					<t:panelGroup>
+						<p:outputLabel value="Unidade" for="selecaoUnidade" />
+					</t:panelGroup>
+					<t:panelGroup>
+						<p:selectOneMenu id="selecaoUnidade"
+							value="#{cadastroProdutoBean.produto.unidade}" label="Unidade"
+							filter="true" filterMatchMode="contains" style="width: 310px">
+							<f:selectItem itemLabel="Selecione" noSelectionOption="true" />
+							<f:selectItems value="#{cadastroProdutoBean.listaUnidades}"
+								var="unidade" itemValue="#{unidade}"
+								itemLabel="#{unidade.sigla}" />
+						</p:selectOneMenu>
+					</t:panelGroup>
+					<t:panelGroup>
+						<p:outputLabel value="Tamanho" for="tamanho" />
+					</t:panelGroup>
+					<t:panelGroup>
+						<h:inputText size="12" id="tamanho"
+							value="#{cadastroProdutoBean.produto.tamanho}" label="Tamanho">
+							<f:convertNumber locale="pt_BR" maxFractionDigits="2"
+								minFractionDigits="2" />
+						</h:inputText>
+					</t:panelGroup>
+
+					<t:panelGroup>
+						<p:outputLabel value="Descrição" for="descricao" />
+					</t:panelGroup>
+					<t:panelGroup colspan="4">
+						<p:inputTextarea rows="10" cols="70" id="descricao" maxlength="240"
+							size="15" value="#{cadastroProdutoBean.produto.descricao}"
+							label="Descrição" />
+					</t:panelGroup>
+					<span></span>
+					<p:commandButton value="Salvar"
+						action="#{cadastroProdutoBean.salvar}" icon="ui-icon-disk"
+						update="@form" />
+				</t:panelGrid>
+			</p:fieldset>
+			<br />
+			<br />
+			<p:fieldset legend="Produtos" toggleable="true" toggleablespeed="500">
+				<p:dataTable value="#{cadastroProdutoBean.produtos}" var="produto"
+					border="1" cellspacing="0" cellpadding="2" paginator="true"
+					rows="10" paginatorPosition="bottom">
+					<p:column headerText="Produto" sortBy="#{produto.nome}">
+						<h:outputText value="#{produto.nome}" />
+					</p:column>
+					<p:column headerText="Tamanho/Unidade"
+						sortBy="#{produto.unidade.sigla}">
+						<h:outputText
+							value="#{''
+						.concat(produto.tamanho)
+						.concat(' ')
+						.concat(produto.unidade.sigla)}" />
+					</p:column>
+					<p:column headerText="Valor" sortBy="#{produto.valor}">
+						<h:outputText value="#{produto.valor}">
+							<f:convertNumber locale="pt_BR" maxFractionDigits="2"
+								minFractionDigits="2" />
+						</h:outputText>
+					</p:column>
+					<p:column headerText="Descrição" sortBy="#{produto.descricao}">
+						<h:outputText value="#{produto.descricao}" />
+					</p:column>
+					<p:column>
+						<p:button icon="ui-icon-pencil" title="Editar"
+							outcome="/CadastroProdutos">
+							<f:param name="id" value="#{produto.idProduto}" />
+						</p:button>
+						<p:commandButton icon="ui-icon-trash" title="Excluir"
+							process="@this" update="@form"
+							action="#{cadastroProdutoBean.excluir}">
+							<p:confirm header="Exclusão de produto"
+								message="Deseja excluir o produto?" icon="ui-icon-alert" />
+							<f:setPropertyActionListener value="#{produto}"
+								target="#{cadastroProdutoBean.produtoSelecionado}" />
+						</p:commandButton>
+						<p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+							<p:commandButton value="Sim" type="button"
+								styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+							<p:commandButton value="Não" type="button"
+								styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+						</p:confirmDialog>
+					</p:column>
+				</p:dataTable>
+			</p:fieldset>
+		</h:form>
+	</ui:define>
+</ui:composition>

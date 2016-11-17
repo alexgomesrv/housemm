@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<ui:composition template="/WEB-INF/template/Layout.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" xmlns:o="http://omnifaces.org/ui">
+	<f:metadata>
+		<o:viewParam name="id" value="#{cadastroEmpresaBean.empresa}" />
+		<f:viewAction action="#{cadastroEmpresaBean.prepararCadastro}" />
+	</f:metadata>
+	<ui:define name="titulo">Cadastro de Empresas</ui:define>
+	<ui:define name="corpo">
+		<h1>Cadastro de Empresas</h1>
+		<h:form id="formUnidade">
+			<p:messages showDetail="false" showSummary="true" autoUpdate="true" />
+			<p:fieldset legend="Dados da Empresa" toggleable="true"
+				toggleablespeed="500">
+				<p:ajax event="toggle" />
+				<h:panelGrid columns="4">
+					<p:outputLabel value="Razão Social" for="razaoSocial" />
+					<h:inputText id="razaoSocial" maxlength="240" size="40"
+						value="#{cadastroEmpresaBean.empresa.razaoSocial}"
+						label="Razão Social">
+					</h:inputText>
+					<p:outputLabel value="Nome Fantasia" for="nomeFantasia" />
+					<h:inputText id="nomeFantasia" maxlength="240" size="40"
+						value="#{cadastroEmpresaBean.empresa.nomeFantasia}"
+						label="Nome Fantasia">
+					</h:inputText>
+
+					<p:outputLabel value="CNPJ" for="cnpj" />
+					<p:inputMask id="cnpj" maxlength="14" size="40"
+						value="#{cadastroEmpresaBean.empresa.cnpj}" label="CNPJ"
+						mask="99.999.999/9999-99" converter="cpfCnpjConverter">
+					</p:inputMask>
+					<p:outputLabel value="Telefone" for="telefone" />
+					<p:inputMask id="telefone" maxlength="11" size="10"
+						value="#{cadastroEmpresaBean.empresa.telefone}"
+						mask="(99)99999-9999" label="Telefone"
+						converter="telefoneConverter">
+					</p:inputMask>
+					<p:outputLabel value="Taxa de Entrega" for="taxaEntrega" />
+					<h:inputText size="12" id="taxaEntrega"
+						value="#{cadastroEmpresaBean.empresa.taxaEntrega}"
+						label="Taxa de Entrega">
+						<f:convertNumber locale="pt_BR" maxFractionDigits="2"
+							minFractionDigits="2" />
+					</h:inputText>
+
+					
+					<p:commandButton value="Salvar"
+						action="#{cadastroEmpresaBean.salvar}" icon="ui-icon-disk"
+						update="@form" />
+				</h:panelGrid>
+			</p:fieldset>
+			<br />
+			<br />
+			<p:fieldset legend="Empresas" toggleable="true" toggleablespeed="500">
+				<p:dataTable value="#{cadastroEmpresaBean.empresas}" var="empresa"
+					border="1" cellspacing="0" cellpadding="2" paginator="true"
+					rows="10" paginatorPosition="bottom">
+					<p:column headerText="Razão Social" sortBy="#{empresa.razaoSocial}">
+						<h:outputText value="#{empresa.razaoSocial}" />
+					</p:column>
+					<p:column headerText="Nome Fantasia"
+						sortBy="#{empresa.nomeFantasia}">
+						<h:outputText value="#{empresa.nomeFantasia}" />
+					</p:column>
+					<p:column headerText="CNPJ" sortBy="#{empresa.cnpj}">
+						<h:outputText value="#{empresa.cnpj}"
+							converter="cpfCnpjFormatadoConverter" />
+					</p:column>
+					<p:column headerText="Telefone" sortBy="#{empresa.telefone}">
+						<h:outputText value="#{empresa.telefone}"
+							converter="telefoneFormatadoConverter" />
+					</p:column>
+					<p:column headerText="Taxa de Entrega"
+						sortBy="#{empresa.taxaEntrega}">
+						<h:outputText value="#{empresa.taxaEntrega}">
+							<f:convertNumber locale="pt_BR" maxFractionDigits="2"
+								minFractionDigits="2" />
+						</h:outputText>
+					</p:column>
+					<p:column>
+						<p:button icon="ui-icon-pencil" title="Editar"
+							outcome="/CadastroEmpresas">
+							<f:param name="id" value="#{empresa.idEmpresa}" />
+						</p:button>
+						<p:commandButton icon="ui-icon-trash" title="Excluir"
+							process="@this" update="@form"
+							action="#{cadastroEmpresaBean.excluir}">
+							<p:confirm header="Exclusão de empresa"
+								message="Deseja excluir a empresa?" icon="ui-icon-alert" />
+							<f:setPropertyActionListener value="#{empresa}"
+								target="#{cadastroEmpresaBean.empresaSelecionada}" />
+						</p:commandButton>
+						<p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+							<p:commandButton value="Sim" type="button"
+								styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+							<p:commandButton value="Não" type="button"
+								styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+						</p:confirmDialog>
+					</p:column>
+				</p:dataTable>
+			</p:fieldset>
+		</h:form>
+	</ui:define>
+</ui:composition>

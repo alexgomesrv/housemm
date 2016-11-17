@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<ui:composition template="/WEB-INF/template/Layout.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" xmlns:o="http://omnifaces.org/ui">
+	<f:metadata>
+		<o:viewParam name="id" value="#{cadastroUsuarioBean.usuario}" />
+		<f:viewAction action="#{cadastroUsuarioBean.prepararCadastro}" />
+	</f:metadata>
+	<ui:define name="titulo">Cadastro de Usuários</ui:define>
+	<ui:define name="corpo">
+		<h1>Cadastro de Usuários</h1>
+		<h:form id="formUnidade">
+			<p:messages showDetail="false" showSummary="true" autoUpdate="true" />
+			<p:fieldset legend="Dados do Usuário" toggleable="true"
+				toggleablespeed="500">
+				<p:ajax event="toggle" />
+				<h:panelGrid columns="4">
+					<p:outputLabel value="Nome" for="nome" />
+					<h:inputText id="nome" maxlength="240" size="40"
+						value="#{cadastroUsuarioBean.usuario.nome}" label="Nome">
+					</h:inputText>
+					<p:outputLabel value="Telefone" for="telefone" />
+					<p:inputMask id="telefone" maxlength="11" size="10"
+						value="#{cadastroUsuarioBean.usuario.telefone}"
+						mask="(99)99999-9999" label="Telefone"
+						converter="telefoneConverter">
+					</p:inputMask>
+					<p:outputLabel value="CPF" for="cpf" />
+					<p:inputMask id="cpf" maxlength="11" size="15"
+						value="#{cadastroUsuarioBean.usuario.cpf}" label="CPF"
+						mask="999.999.999-99" converter="cpfCnpjConverter">
+					</p:inputMask>
+
+					<p:outputLabel value="RG" for="rg" />
+					<h:inputText id="rg" maxlength="20" size="15"
+						value="#{cadastroUsuarioBean.usuario.rg}" label="RG">
+					</h:inputText>
+					
+					<p:outputLabel value="E-mail" for="email" />
+					<h:inputText id="email" maxlength="240" size="40"
+						value="#{cadastroUsuarioBean.usuario.email}" label="RG">
+					</h:inputText>
+
+					<p:outputLabel value="Empresa"
+						for="selecaoEmpresa" />
+					<p:selectOneMenu id="selecaoEmpresa"
+						value="#{cadastroUsuarioBean.usuario.empresa}"
+						label="Empresa" filter="true"
+						filterMatchMode="contains" style="width: 310px">
+						<f:selectItem itemLabel="Selecione" noSelectionOption="true" />
+						<f:selectItems
+							value="#{cadastroUsuarioBean.listaEmpresas}"
+							var="empresa" itemValue="#{empresa}"
+							itemLabel="#{empresa.razaoSocial}" />
+					</p:selectOneMenu>
+					
+					<p:outputLabel value="Senha" for="senha" />
+					<p:password id="senha" maxlength="240" size="40"
+						value="#{cadastroUsuarioBean.usuario.senha}" label="Senha">
+					</p:password>
+					
+					<span></span>
+					<p:commandButton value="Salvar"
+						action="#{cadastroUsuarioBean.salvar}" icon="ui-icon-disk"
+						update="@form" />
+				</h:panelGrid>
+			</p:fieldset>
+			<br />
+			<br />
+			<p:fieldset legend="Usuários" toggleable="true"
+				toggleablespeed="500">
+				<p:dataTable value="#{cadastroUsuarioBean.usuarios}"
+					var="usuario" border="1" cellspacing="0" cellpadding="2"
+					paginator="true" rows="10" paginatorPosition="bottom">
+					<p:column headerText="Usuário" sortBy="#{usuario.nome}">
+						<h:outputText value="#{usuario.nome}" />
+					</p:column>
+					<p:column headerText="Telefone" sortBy="#{usuario.telefone}">
+						<h:outputText value="#{usuario.telefone}"
+							converter="telefoneFormatadoConverter">
+						</h:outputText>
+					</p:column>
+					<p:column headerText="CPF" sortBy="#{usuario.cpf}">
+						<h:outputText value="#{usuario.cpf}"
+							converter="cpfCnpjFormatadoConverter" />
+					</p:column>
+					<p:column headerText="RG" sortBy="#{usuario.rg}">
+						<h:outputText value="#{usuario.rg}" />
+					</p:column>
+					<p:column headerText="E-mail" sortBy="#{usuario.email}">
+						<h:outputText value="#{usuario.email}" />
+					</p:column>
+					<p:column headerText="Empresa"
+						sortBy="#{usuario.empresa.razaoSocial}">
+						<h:outputText value="#{usuario.empresa.razaoSocial}" />
+					</p:column>
+					<p:column>
+						<p:button icon="ui-icon-pencil" title="Editar"
+							outcome="/CadastroUsuarios">
+							<f:param name="id" value="#{usuario.idUsuario}" />
+						</p:button>
+						<p:commandButton icon="ui-icon-trash" title="Excluir"
+							process="@this" update="@form"
+							action="#{cadastroUsuarioBean.excluir}">
+							<p:confirm header="Exclusão de usuário"
+								message="Deseja excluir o usuário?" icon="ui-icon-alert" />
+							<f:setPropertyActionListener value="#{usuario}"
+								target="#{cadastroUsuarioBean.usuarioSelecionado}" />
+						</p:commandButton>
+						<p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+							<p:commandButton value="Sim" type="button"
+								styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+							<p:commandButton value="Não" type="button"
+								styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+						</p:confirmDialog>
+					</p:column>
+				</p:dataTable>
+			</p:fieldset>
+		</h:form>
+	</ui:define>
+</ui:composition>

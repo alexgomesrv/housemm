@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<ui:composition template="/WEB-INF/template/Layout.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" xmlns:o="http://omnifaces.org/ui"
+	xmlns:t="http://myfaces.apache.org/tomahawk">
+	<f:metadata>
+		<f:viewAction action="#{relatorioBean.preparar}" />
+	</f:metadata>
+	<ui:define name="titulo">Entregas por Período</ui:define>
+	<ui:define name="corpo">
+		<h1>Entregas por Período</h1>
+		<h:form id="formUnidade">
+			<p:fieldset legend="Filtros do Relatório" toggleable="true"
+				toggleablespeed="500">
+				<p:ajax event="toggle" />
+				<t:panelGrid id="panelDados" columns="2">
+					<t:panelGroup>
+						<p:outputLabel value="Data Inicial" for="dataInicial" />
+					</t:panelGroup>
+					<t:panelGroup>
+						<p:calendar id="dataInicial" size="12" pattern="dd/MM/yyyy"
+							value="#{relatorioBean.dataInicial}">
+						</p:calendar>
+					</t:panelGroup>
+					<t:panelGroup>
+						<p:outputLabel value="Data Final" for="dataFinal" />
+					</t:panelGroup>
+					<t:panelGroup>
+						<p:calendar id="dataFinal" size="12" pattern="dd/MM/yyyy"
+							value="#{relatorioBean.dataFinal}">
+						</p:calendar>
+					</t:panelGroup>
+					<t:panelGroup>
+						<p:outputLabel value="Status" for="status" />
+					</t:panelGroup>
+					<t:panelGroup>
+						<p:selectOneRadio id="status" value="#{relatorioBean.status}">
+						<p:ajax update="@this tabelaPedidos"
+									listener="#{relatorioBean.consultar}" />
+							<f:selectItem itemLabel="Todos" itemValue="" />
+							<f:selectItem itemLabel="Pendente" itemValue="Pendente" />
+							<f:selectItem itemLabel="Em trânsito" itemValue="Em trânsito" />
+							<f:selectItem itemLabel="Cancelado" itemValue="Cancelado" />
+							<f:selectItem itemLabel="Entregue" itemValue="Entregue" />
+						</p:selectOneRadio>
+					</t:panelGroup>
+					<t:panelGroup colspan="2">
+						<p:commandButton value="Buscar"
+							action="#{relatorioBean.consultar}" icon="ui-icon-disk"
+							update="@form" />
+					</t:panelGroup>
+										<t:panelGroup colspan="2">
+					<p:dataTable id="tabelaPedidos"
+					value="#{relatorioBean.pedidos}" var="pedido" border="1"
+					cellspacing="0" cellpadding="2"
+					rowStyleClass="#{pedido.status eq 'Pendente' ? 'pendente' 
+					: pedido.status eq 'Em trânsito' ? 'emTransito'
+					: pedido.status eq 'Cancelado' ? 'cancelado'
+					: 'entregue'}">
+					<p:column headerText="Cliente" sortBy="#{pedido.cliente.nome}">
+						<h:outputText value="#{pedido.cliente.nome}" />
+					</p:column>
+					<p:column headerText="Data" sortBy="#{pedido.data}">
+						<h:outputText value="#{pedido.data}" />
+					</p:column>
+					<p:column headerText="Qtd. Produtos" sortBy="#{pedido.quantidade}">
+						<h:outputText value="#{pedido.quantidade}" />
+					</p:column>
+					<p:column headerText="R$ Total" sortBy="#{pedido.valorTotalPedido}">
+						<h:outputText value="#{pedido.valorTotalPedido}" />
+					</p:column>
+					<p:column headerText="Entregador" sortBy="#{pedido.entregador.nome}">
+						<h:outputText value="#{pedido.entregador.nome}" />
+					</p:column>
+					<p:column headerText="Status" sortBy="#{pedido.status}">
+						<h:outputText value="#{pedido.status}" />
+					</p:column>
+				</p:dataTable>
+									</t:panelGroup>
+									<t:panelGroup>
+						<p:outputLabel value="R$ TOTAL" />
+					</t:panelGroup>
+														<t:panelGroup>
+														<h:inputText value="#{relatorioBean.valorTotal}"
+							readonly="true" size="5" />
+														</t:panelGroup>
+				</t:panelGrid>
+			</p:fieldset>
+		</h:form>
+	</ui:define>
+</ui:composition>

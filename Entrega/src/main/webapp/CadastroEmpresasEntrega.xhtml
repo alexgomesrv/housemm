@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<ui:composition template="/WEB-INF/template/Layout.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" xmlns:o="http://omnifaces.org/ui">
+	<f:metadata>
+		<o:viewParam name="id"
+			value="#{cadastroEmpresaEntregaBean.empresaEntrega}" />
+		<f:viewAction action="#{cadastroEmpresaEntregaBean.prepararCadastro}" />
+	</f:metadata>
+	<ui:define name="titulo">Cadastro de Empresas de Entrega</ui:define>
+	<ui:define name="corpo">
+		<h1>Cadastro de Empresas de Entrega</h1>
+		<h:form id="formUnidade">
+			<p:messages showDetail="false" showSummary="true" autoUpdate="true" />
+			<p:fieldset legend="Dados da Empresa de Entrega" toggleable="true"
+				toggleablespeed="500">
+				<p:ajax event="toggle" />
+				<h:panelGrid columns="4">
+					<p:outputLabel value="Nome" for="nome" />
+					<h:inputText id="nome" maxlength="240" size="40"
+						value="#{cadastroEmpresaEntregaBean.empresaEntrega.nome}"
+						label="Nome">
+					</h:inputText>
+
+					<p:outputLabel value="CNPJ" for="cnpj" />
+					<p:inputMask id="cnpj" maxlength="14" size="15"
+						value="#{cadastroEmpresaEntregaBean.empresaEntrega.cnpj}"
+						label="CNPJ" mask="99.999.999/9999-99"
+						converter="cpfCnpjConverter">
+					</p:inputMask>
+
+					<p:outputLabel value="Telefone" for="telefone" />
+					<p:inputMask id="telefone" maxlength="11" size="10"
+						value="#{cadastroEmpresaEntregaBean.empresaEntrega.telefone}"
+						mask="(99)99999-9999" label="Telefone"
+						converter="telefoneConverter">
+					</p:inputMask>
+					<p:outputLabel value="E-mail" for="email" />
+					<h:inputText size="40" id="email"
+						value="#{cadastroEmpresaEntregaBean.empresaEntrega.email}"
+						label="E-mail"/>
+
+					<p:outputLabel value="Endereço" for="selecaoEndereco" />
+					<p:selectOneMenu id="selecaoEndereco"
+						value="#{cadastroEmpresaEntregaBean.empresaEntrega.endereco}"
+						label="Endereço" filter="true" filterMatchMode="contains"
+						style="width: 310px">
+						<f:selectItem itemLabel="Selecione" noSelectionOption="true" />
+						<f:selectItems
+							value="#{cadastroEmpresaEntregaBean.listaEnderecos}"
+							var="endereco" itemValue="#{endereco}"
+							itemLabel="#{''.
+							concat(endereco.tipoLogradouro)
+							.concat(' ')
+							.concat(endereco.logradouro)
+							.concat(' - ')
+							.concat(endereco.bairro)}" />
+					</p:selectOneMenu>
+
+					<p:commandButton value="Salvar"
+						action="#{cadastroEmpresaEntregaBean.salvar}" icon="ui-icon-disk"
+						update="@form" />
+				</h:panelGrid>
+			</p:fieldset>
+			<br />
+			<br />
+			<p:fieldset legend="Empresas de Entrega" toggleable="true"
+				toggleablespeed="500">
+				<p:dataTable value="#{cadastroEmpresaEntregaBean.empresaEntregas}"
+					var="empresaEntrega" border="1" cellspacing="0" cellpadding="2"
+					paginator="true" rows="10" paginatorPosition="bottom">
+					<p:column headerText="Nome" sortBy="#{empresaEntrega.nome}">
+						<h:outputText value="#{empresaEntrega.nome}" />
+					</p:column>
+					<p:column headerText="CNPJ" sortBy="#{empresaEntrega.cnpj}">
+						<h:outputText value="#{empresaEntrega.cnpj}"
+							converter="cpfCnpjFormatadoConverter" />
+					</p:column>
+					<p:column headerText="Telefone" sortBy="#{empresaEntrega.telefone}">
+						<h:outputText value="#{empresaEntrega.telefone}"
+							converter="telefoneFormatadoConverter" />
+					</p:column>
+					<p:column headerText="E-mail" sortBy="#{empresaEntrega.email}">
+						<h:outputText value="#{empresaEntrega.email}" />
+					</p:column>
+					<p:column headerText="Endereço" sortBy="#{''.
+							concat(empresaEntrega.endereco.tipoLogradouro)
+							.concat(' ')
+							.concat(empresaEntrega.endereco.logradouro)
+							.concat(' - ')
+							.concat(empresaEntrega.endereco.bairro)}">
+						<h:outputText value="#{''.
+							concat(empresaEntrega.endereco.tipoLogradouro)
+							.concat(' ')
+							.concat(empresaEntrega.endereco.logradouro)
+							.concat(' - ')
+							.concat(empresaEntrega.endereco.bairro)}" />
+					</p:column>
+					<p:column>
+						<p:button icon="ui-icon-pencil" title="Editar"
+							outcome="/CadastroEmpresasEntrega">
+							<f:param name="id" value="#{empresaEntrega.idEmpresaEntrega}" />
+							</p:button>
+						<p:commandButton icon="ui-icon-trash" title="Excluir"
+							process="@this" update="@form"
+							action="#{cadastroEmpresaEntregaBean.excluir}">
+							<p:confirm header="Exclusão de empresaEntrega"
+								message="Deseja excluir a empresaEntrega?" icon="ui-icon-alert" />
+							<f:setPropertyActionListener value="#{empresaEntrega}"
+								target="#{cadastroEmpresaEntregaBean.empresaEntregaSelecionada}" />
+						</p:commandButton>
+						<p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+							<p:commandButton value="Sim" type="button"
+								styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+							<p:commandButton value="Não" type="button"
+								styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+						</p:confirmDialog>
+					</p:column>
+				</p:dataTable>
+			</p:fieldset>
+		</h:form>
+	</ui:define>
+</ui:composition>

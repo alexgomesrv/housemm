@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<ui:composition template="/WEB-INF/template/Layout.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" xmlns:o="http://omnifaces.org/ui">
+	<f:metadata>
+		<o:viewParam name="id" value="#{cadastroEntregadorBean.entregador}" />
+		<f:viewAction action="#{cadastroEntregadorBean.prepararCadastro}" />
+	</f:metadata>
+	<ui:define name="titulo">Cadastro de Entregadores</ui:define>
+	<ui:define name="corpo">
+		<h1>Cadastro de Entregadores</h1>
+		<h:form id="formUnidade">
+			<p:messages showDetail="false" showSummary="true" autoUpdate="true" />
+			<p:fieldset legend="Dados do Entregador" toggleable="true"
+				toggleablespeed="500">
+				<p:ajax event="toggle" />
+				<h:panelGrid columns="4">
+					<p:outputLabel value="Nome" for="nome" />
+					<h:inputText id="nome" maxlength="240" size="40"
+						value="#{cadastroEntregadorBean.entregador.nome}" label="Nome">
+					</h:inputText>
+					<p:outputLabel value="Celular" for="celular" />
+					<p:inputMask id="celular" maxlength="11" size="10"
+						value="#{cadastroEntregadorBean.entregador.celular}"
+						mask="(99)99999-9999" label="Celular"
+						converter="telefoneConverter">
+					</p:inputMask>
+					<p:outputLabel value="CPF" for="cpf" />
+					<p:inputMask id="cpf" maxlength="11" size="15"
+						value="#{cadastroEntregadorBean.entregador.cpf}" label="CPF"
+						mask="999.999.999-99" converter="cpfCnpjConverter">
+					</p:inputMask>
+
+					<p:outputLabel value="RG" for="rg" />
+					<h:inputText id="rg" maxlength="20" size="15"
+						value="#{cadastroEntregadorBean.entregador.rg}" label="RG">
+					</h:inputText>
+
+					<p:outputLabel value="Empresa de Entrega"
+						for="selecaoEmpresaEntrega" />
+					<p:selectOneMenu id="selecaoEmpresaEntrega"
+						value="#{cadastroEntregadorBean.entregador.empresaEntrega}"
+						label="Empresa de Entrega" filter="true"
+						filterMatchMode="contains" style="width: 310px">
+						<f:selectItem itemLabel="Selecione" noSelectionOption="true" />
+						<f:selectItems
+							value="#{cadastroEntregadorBean.listaEmpresasEntrega}"
+							var="empresaEntrega" itemValue="#{empresaEntrega}"
+							itemLabel="#{empresaEntrega.nome}" />
+					</p:selectOneMenu>
+					<span></span>
+					
+					<p:commandButton value="Salvar"
+						action="#{cadastroEntregadorBean.salvar}" icon="ui-icon-disk"
+						update="@form" />
+				</h:panelGrid>
+			</p:fieldset>
+			<br />
+			<br />
+			<p:fieldset legend="Entregadores" toggleable="true"
+				toggleablespeed="500">
+				<p:dataTable value="#{cadastroEntregadorBean.entregadores}"
+					var="entregador" border="1" cellspacing="0" cellpadding="2"
+					paginator="true" rows="10" paginatorPosition="bottom">
+					<p:column headerText="Entregador" sortBy="#{entregador.nome}">
+						<h:outputText value="#{entregador.nome}" />
+					</p:column>
+					<p:column headerText="Telefone" sortBy="#{entregador.celular}">
+						<h:outputText value="#{entregador.celular}"
+							converter="telefoneFormatadoConverter">
+						</h:outputText>
+					</p:column>
+					<p:column headerText="CPF" sortBy="#{entregador.cpf}">
+						<h:outputText value="#{entregador.cpf}"
+							converter="cpfCnpjFormatadoConverter" />
+					</p:column>
+					<p:column headerText="RG" sortBy="#{entregador.rg}">
+						<h:outputText value="#{entregador.rg}" />
+					</p:column>
+					<p:column headerText="Empresa de Entrega"
+						sortBy="#{entregador.empresaEntrega.nome}">
+						<h:outputText value="#{entregador.empresaEntrega.nome}" />
+					</p:column>
+					<p:column>
+						<p:button icon="ui-icon-pencil" title="Editar"
+							outcome="/CadastroEntregadores">
+							<f:param name="id" value="#{entregador.idEntregador}" />
+						</p:button>
+						<p:commandButton icon="ui-icon-trash" title="Excluir"
+							process="@this" update="@form"
+							action="#{cadastroEntregadorBean.excluir}">
+							<p:confirm header="Exclusão de entregador"
+								message="Deseja excluir o entregador?" icon="ui-icon-alert" />
+							<f:setPropertyActionListener value="#{entregador}"
+								target="#{cadastroEntregadorBean.entregadorSelecionado}" />
+						</p:commandButton>
+						<p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+							<p:commandButton value="Sim" type="button"
+								styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+							<p:commandButton value="Não" type="button"
+								styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+						</p:confirmDialog>
+					</p:column>
+				</p:dataTable>
+			</p:fieldset>
+		</h:form>
+	</ui:define>
+</ui:composition>

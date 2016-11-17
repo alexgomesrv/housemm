@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<ui:composition template="/WEB-INF/template/Layout.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" xmlns:o="http://omnifaces.org/ui"
+	xmlns:t="http://myfaces.apache.org/tomahawk">
+	<style>
+@import url('https://fonts.googleapis.com/css?family=Montserrat:700');
+</style>
+	<f:metadata>
+		<o:viewParam name="id" value="#{cadastroCidadeBean.cidade}" />
+		<f:viewAction action="#{cadastroCidadeBean.prepararCadastro}" />
+	</f:metadata>
+	<ui:define name="titulo">Cadastro de Cidades</ui:define>
+	<ui:define name="corpo">
+		<h1>Cadastro de Cidades</h1>
+		<h:form id="formCidade">
+			<p:messages showDetail="false" showSummary="true" autoUpdate="true" />
+			<p:fieldset legend="Dados da Cidade" toggleable="true"
+				toggleablespeed="500">
+				<p:ajax event="toggle" />
+				<t:panelGrid id="panelDados" columns="4">
+					<t:panelGroup>
+						<p:outputLabel value="Nome" for="nome" />
+					</t:panelGroup>
+
+					<t:panelGroup>
+						<h:inputText id="nome" maxlength="240" size="40"
+							value="#{cadastroCidadeBean.cidade.nome}" label="Nome">
+						</h:inputText>
+					</t:panelGroup>
+
+					<t:panelGroup>
+						<p:outputLabel value="UF" for="selecaoUF" />
+					</t:panelGroup>
+
+					<t:panelGroup>
+						<p:selectOneMenu id="selecaoUF"
+							value="#{cadastroCidadeBean.cidade.uf}" label="UF" filter="true"
+							filterMatchMode="contains" style="vertical-align: middle;">
+							<f:selectItem itemLabel="Selecione" noSelectionOption="true" />
+							<f:selectItems value="#{cadastroCidadeBean.listaUF}" var="uf"
+								itemValue="#{UF}" itemLabel="#{UF.uf}" />
+						</p:selectOneMenu>
+					</t:panelGroup>
+					
+					<p:commandButton value="Salvar"
+						action="#{cadastroCidadeBean.salvar}" icon="ui-icon-disk"
+						update="@form" />
+				</t:panelGrid>
+			</p:fieldset>
+			<br />
+			<br />
+			<p:fieldset legend="Cidades" toggleable="true" toggleablespeed="500">
+				<p:dataTable value="#{cadastroCidadeBean.cidades}" var="cidade"
+					border="1" cellspacing="0" cellpadding="2" paginator="true"
+					rows="10" paginatorPosition="bottom">
+					<p:column headerText="Nome" sortBy="#{cidade.nome}" width="80%">
+						<h:outputText value="#{cidade.nome}" />
+					</p:column>
+					<p:column headerText="UF" sortBy="#{cidade.uf}">
+						<h:outputText value="#{cidade.uf}" />
+					</p:column>
+					<p:column>
+						<p:button icon="ui-icon-pencil" title="Editar"
+							outcome="/CadastroCidades">
+							<f:param name="id" value="#{cidade.idCidade}" />
+						</p:button>
+						<p:commandButton icon="ui-icon-trash" title="Excluir"
+							process="@this" update="@form"
+							action="#{cadastroCidadeBean.excluir}">
+							<p:confirm header="Exclusão de cidade"
+								message="Deseja excluir a cidade?" icon="ui-icon-alert" />
+							<f:setPropertyActionListener value="#{cidade}"
+								target="#{cadastroCidadeBean.cidadeSelecionada}" />
+						</p:commandButton>
+						<p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+							<p:commandButton value="Sim" type="button"
+								styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+							<p:commandButton value="Não" type="button"
+								styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+						</p:confirmDialog>
+					</p:column>
+				</p:dataTable>
+			</p:fieldset>
+		</h:form>
+	</ui:define>
+</ui:composition>

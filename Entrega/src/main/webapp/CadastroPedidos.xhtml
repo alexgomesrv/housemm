@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<ui:composition template="/WEB-INF/template/Layout.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" xmlns:o="http://omnifaces.org/ui"
+	xmlns:t="http://myfaces.apache.org/tomahawk">
+	<f:metadata>
+		<o:viewParam name="id" value="#{cadastroPedidoBean.pedido}" />
+		<f:viewAction action="#{cadastroPedidoBean.prepararCadastro}" />
+	</f:metadata>
+	<ui:define name="titulo">Central de Pedidos</ui:define>
+	<ui:define name="corpo">
+		<h1>Central de Pedidos</h1>
+		<h:form id="formPedido">
+			<p:messages id="messages" showDetail="false" showSummary="true"
+				autoUpdate="true" />
+			<p:fieldset legend="Dados do Pedido" toggleable="true"
+				toggleablespeed="500">
+				<t:panelGrid id="panelGeral" columns="2">
+					<t:panelGroup>
+						<p:outputLabel value="Status" />
+					</t:panelGroup>
+					<t:panelGroup>
+						<p:selectOneRadio id="status"
+							value="#{cadastroPedidoBean.pedido.status}">
+							<f:selectItem itemLabel="Pendente" itemValue="Pendente" />
+							<f:selectItem itemLabel="Em trânsito" itemValue="Em trânsito" />
+							<f:selectItem itemLabel="Cancelado" itemValue="Cancelado" />
+							<f:selectItem itemLabel="Entregue" itemValue="Entregue" />
+						</p:selectOneRadio>
+					</t:panelGroup>
+					<t:panelGroup>
+						<p:outputLabel value="Entregador" />
+					</t:panelGroup>
+					<t:panelGroup>
+						<p:selectOneMenu id="selecaoEntregador"
+							value="#{cadastroPedidoBean.pedido.entregador}"
+							label="Entregador" filter="true" filterMatchMode="contains"
+							style="width: 180px">
+							<f:selectItem itemLabel="Selecione" noSelectionOption="true" />
+							<f:selectItems value="#{cadastroPedidoBean.listaEntregadores}"
+								var="entregador" itemValue="#{entregador}"
+								itemLabel="#{entregador.nome}" />
+						</p:selectOneMenu>
+					</t:panelGroup>
+				</t:panelGrid>
+				<p:panel id="camposCliente" header="Cliente">
+					<t:panelGrid id="panelCliente" columns="6">
+						<t:panelGroup>
+							<p:outputLabel value="Telefone" for="telefone" />
+						</t:panelGroup>
+						<t:panelGroup>
+							<p:inputMask id="telefone" maxlength="11" size="20"
+								value="#{cadastroPedidoBean.cliente.telefone}"
+								mask="(99)99999-9999" label="Telefone"
+								converter="telefoneConverter">
+								<p:ajax event="blur" update="@this panelCliente"
+									listener="#{cadastroPedidoBean.buscarParceiroPorTelefone}" />
+							</p:inputMask>
+						</t:panelGroup>
+						<t:panelGroup>
+							<p:outputLabel value="Nome" for="nome" />
+						</t:panelGroup>
+						<t:panelGroup>
+							<h:inputText id="nome" maxlength="240" size="40"
+								value="#{cadastroPedidoBean.cliente.nome}" label="Nome">
+							</h:inputText>
+						</t:panelGroup>
+						<t:panelGroup>
+							<p:outputLabel value="Data de nascimento" for="dataNascimento" />
+						</t:panelGroup>
+						<t:panelGroup>
+							<p:calendar id="dataNascimento" size="12" pattern="dd/MM/yyyy"
+								value="#{cadastroPedidoBean.cliente.dataNascimento}">
+							</p:calendar>
+						</t:panelGroup>
+
+						<t:panelGroup>
+							<p:outputLabel value="Endereço" for="selecaoEndereco" />
+						</t:panelGroup>
+						<t:panelGroup>
+							<p:selectOneMenu id="selecaoEndereco"
+								value="#{cadastroPedidoBean.cliente.endereco}" label="Endereço"
+								filter="true" filterMatchMode="contains" style="width: 180px">
+								<f:selectItem itemLabel="Selecione" noSelectionOption="true" />
+								<f:selectItems value="#{cadastroPedidoBean.listaEnderecos}"
+									var="endereco" itemValue="#{endereco}"
+									itemLabel="#{''.
+							concat(endereco.tipoLogradouro)
+							.concat(' ')
+							.concat(endereco.logradouro)
+							.concat(' - ')
+							.concat(endereco.bairro)}" />
+							</p:selectOneMenu>
+						</t:panelGroup>
+
+						<t:panelGroup>
+							<p:outputLabel value="Ponto de referência" for="pontoReferencia" />
+						</t:panelGroup>
+						<t:panelGroup>
+							<h:inputText id="pontoReferencia" maxlength="240" size="40"
+								value="#{cadastroPedidoBean.cliente.enderecoPontoReferencia}"
+								label="Ponto de referência">
+							</h:inputText>
+						</t:panelGroup>
+						<t:panelGroup>
+							<p:outputLabel value="Nº" for="numero" />
+						</t:panelGroup>
+						<t:panelGroup>
+							<h:inputText id="numero" maxlength="10" size="10"
+								value="#{cadastroPedidoBean.cliente.enderecoNumero}" label="Nº">
+							</h:inputText>
+						</t:panelGroup>
+					</t:panelGrid>
+				</p:panel>
+				<p:panel id="camposProdutos" header="Produtos">
+					<t:panelGrid id="panelProdutos" columns="8">
+						<t:panelGroup>
+							<p:outputLabel value="Produto" />
+						</t:panelGroup>
+						<t:panelGroup>
+							<p:selectOneMenu id="selecaoProduto"
+								value="#{cadastroPedidoBean.produto}" label="Produto"
+								filter="true" filterMatchMode="contains" style="width: 180px">
+								<f:selectItem itemLabel="Selecione" noSelectionOption="true" />
+								<f:selectItems value="#{cadastroPedidoBean.listaProdutos}"
+									var="produto" itemValue="#{produto}"
+									itemLabel="#{produto.nome}" />
+								<p:ajax update="@this valorUnitario"
+									listener="#{cadastroPedidoBean.atualizarValorUnitario}" />
+							</p:selectOneMenu>
+						</t:panelGroup>
+						<t:panelGroup>
+							<h:inputText id="valorUnitario"
+								value="#{cadastroPedidoBean.valorUnitario}" size="5">
+								<f:convertNumber locale="pt_BR" maxFractionDigits="2"
+									minFractionDigits="2" />
+								<p:ajax event="blur" update="@this valorTotal"
+									listener="#{cadastroPedidoBean.atualizarValorTotal}" />
+							</h:inputText>
+						</t:panelGroup>
+						<t:panelGroup>
+							<p:outputLabel value="Quantidade" />
+						</t:panelGroup>
+						<t:panelGroup>
+							<h:inputText id="quantidade"
+								value="#{cadastroPedidoBean.quantidade}" size="5">
+								<f:convertNumber locale="pt_BR" maxFractionDigits="2"
+									minFractionDigits="2" />
+								<p:ajax event="blur" update="@this valorTotal"
+									listener="#{cadastroPedidoBean.atualizarValorTotal}" />
+							</h:inputText>
+						</t:panelGroup>
+						<t:panelGroup>
+							<p:outputLabel value="R$ TOTAL" />
+						</t:panelGroup>
+						<t:panelGroup>
+							<h:inputText id="valorTotal"
+								value="#{cadastroPedidoBean.valorTotal}" readonly="true"
+								size="5">
+								<f:convertNumber locale="pt_BR" maxFractionDigits="2"
+									minFractionDigits="2" />
+							</h:inputText>
+						</t:panelGroup>
+						<t:panelGroup>
+							<p:commandButton value="Adicionar"
+								action="#{cadastroPedidoBean.adicionar}" icon="fa-plus"
+								update="@form tabelaProdutos" />
+						</t:panelGroup>
+					</t:panelGrid>
+				</p:panel>
+				<p:dataTable id="tabelaProdutos"
+					value="#{cadastroPedidoBean.listProdutoPedido}" var="pp" border="1"
+					cellspacing="0" cellpadding="2">
+					<p:column headerText="Produto" sortBy="#{pp.produto.nome}">
+						<h:outputText value="#{pp.produto.nome}" />
+					</p:column>
+					<p:column headerText="Valor Unitário" sortBy="#{pp.valorUnitario}">
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText value="#{pp.valorUnitario}" />
+							</f:facet>
+							<f:facet name="input">
+								<p:inputText value="#{pp.valorUnitario}" style="width:100%" />
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+					<p:column headerText="Quantidade" sortBy="#{pp.quantidade}">
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText value="#{pp.quantidade}" />
+							</f:facet>
+							<f:facet name="input">
+								<p:inputText value="#{pp.quantidade}" style="width:100%" />
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+					<p:column headerText="Valor Total" sortBy="#{pp.valorTotal}">
+						<h:outputText value="#{pp.valorTotal}" />
+					</p:column>
+					<p:column headerText="Excluir">
+						<p:commandButton icon="ui-icon-trash" title="Excluir"
+							process="@this" update="@form"
+							action="#{cadastroPedidoBean.excluirProduto}">
+							<f:setPropertyActionListener value="#{pp}"
+								target="#{cadastroPedidoBean.ppSelecionado}" />
+						</p:commandButton>
+					</p:column>
+				</p:dataTable>
+
+				<t:panelGrid id="totais" columns="6">
+					<t:panelGroup>
+						<p:outputLabel value="Taxa de Entrega" />
+					</t:panelGroup>
+					<t:panelGroup>
+						<h:inputText value="#{cadastroPedidoBean.taxaEntrega}"
+							readonly="true" size="5" />
+					</t:panelGroup>
+					<t:panelGroup>
+						<p:outputLabel value="Total dos Produtos" />
+					</t:panelGroup>
+					<t:panelGroup>
+						<h:inputText value="#{cadastroPedidoBean.totalProdutos}"
+							readonly="true" size="5" />
+					</t:panelGroup>
+					<t:panelGroup>
+						<p:outputLabel value="R$ Pedido" />
+					</t:panelGroup>
+					<t:panelGroup>
+						<h:inputText value="#{cadastroPedidoBean.totalPedido}"
+							readonly="true" size="5" />
+					</t:panelGroup>
+					<t:panelGroup>
+						<p:outputLabel value="Valor Pago" />
+					</t:panelGroup>
+					<t:panelGroup>
+						<h:inputText value="#{cadastroPedidoBean.pedido.valorPago}"
+							size="5">
+							<f:convertNumber locale="pt_BR" maxFractionDigits="2"
+								minFractionDigits="2" />
+						</h:inputText>
+					</t:panelGroup>
+				</t:panelGrid>
+				<p:commandButton value="Salvar"
+					action="#{cadastroPedidoBean.salvar}" icon="ui-icon-disk"
+					update="@form">
+					<f:setPropertyActionListener
+						value="#{cadastroPedidoBean.listProdutoPedido}"
+						target="#{cadastroPedidoBean.listProdutoPedido}" />
+				</p:commandButton>
+			</p:fieldset>
+			<p:fieldset legend="Pedidos" toggleable="true" toggleablespeed="500">
+			<p:selectOneRadio id="statusFiltro"
+							value="#{cadastroPedidoBean.statusFiltro}">
+							<p:ajax update="@this tabelaPedidos"
+									listener="#{cadastroPedidoBean.consultar}" />
+							<f:selectItem itemLabel="Todos" itemValue="" />
+							<f:selectItem itemLabel="Pendente" itemValue="Pendente" />
+							<f:selectItem itemLabel="Em trânsito" itemValue="Em trânsito" />
+							<f:selectItem itemLabel="Cancelado" itemValue="Cancelado" />
+							<f:selectItem itemLabel="Entregue" itemValue="Entregue" />
+						</p:selectOneRadio>
+				<p:dataTable id="tabelaPedidos"
+					value="#{cadastroPedidoBean.pedidos}" var="pedido" border="1"
+					cellspacing="0" cellpadding="2"
+					rowStyleClass="#{pedido.status eq 'Pendente' ? 'pendente' 
+					: pedido.status eq 'Em trânsito' ? 'emTransito'
+					: pedido.status eq 'Cancelado' ? 'cancelado'
+					: 'entregue'}">
+					<p:column headerText="Cliente" sortBy="#{pedido.cliente.nome}">
+						<h:outputText value="#{pedido.cliente.nome}" />
+					</p:column>
+					<p:column headerText="Data" sortBy="#{pedido.data}">
+						<h:outputText value="#{pedido.data}" />
+					</p:column>
+					<p:column headerText="Qtd. Produtos" sortBy="#{pedido.quantidade}">
+						<h:outputText value="#{pedido.quantidade}" />
+					</p:column>
+					<p:column headerText="R$ Total" sortBy="#{pedido.valorTotalPedido}">
+						<h:outputText value="#{pedido.valorTotalPedido}" />
+					</p:column>
+					<p:column headerText="Entregador" sortBy="#{pedido.entregador.nome}">
+						<h:outputText value="#{pedido.entregador.nome}" />
+					</p:column>
+					<p:column headerText="Status" sortBy="#{pedido.status}">
+						<h:outputText value="#{pedido.status}" />
+					</p:column>
+					<p:column>
+						<p:button icon="ui-icon-pencil" title="Editar"
+							outcome="/CadastroPedidos">
+							<f:param name="id" value="#{pedido.idPedido}" />
+						</p:button>
+					</p:column>
+				</p:dataTable>
+			</p:fieldset>
+		</h:form>
+	</ui:define>
+</ui:composition>

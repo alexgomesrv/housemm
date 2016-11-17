@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<ui:composition template="/WEB-INF/template/Layout.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" xmlns:o="http://omnifaces.org/ui"
+	xmlns:t="http://myfaces.apache.org/tomahawk">
+	<f:metadata>
+		<o:viewParam name="id" value="#{cadastroEnderecoBean.endereco}" />
+		<f:viewAction action="#{cadastroEnderecoBean.prepararCadastro}" />
+	</f:metadata>
+	<ui:define name="titulo">Cadastro de Endereços</ui:define>
+	<ui:define name="corpo">
+		<h1>Cadastro de Endereços</h1>
+		<h:form id="formUnidade">
+			<p:messages showDetail="false" showSummary="true" autoUpdate="true" />
+			<p:fieldset legend="Dados do Endereço" toggleable="true"
+				toggleablespeed="500">
+				<p:ajax event="toggle" />
+				<t:panelGrid id="panelDados" columns="4">
+					<t:panelGroup>
+						<p:outputLabel value="Cidade" for="selecaoCidade" />
+					</t:panelGroup>
+					<t:panelGroup colspan="3">
+						<p:selectOneMenu id="selecaoCidade"
+							value="#{cadastroEnderecoBean.endereco.cidade}" label="Cidade"
+							filter="true" filterMatchMode="contains" style="width: 430px">
+							<f:selectItem itemLabel="Selecione" noSelectionOption="true" />
+							<f:selectItems value="#{cadastroEnderecoBean.listaCidades}"
+								var="cidade" itemValue="#{cidade}" itemLabel="#{cidade.nome}" />
+						</p:selectOneMenu>
+					</t:panelGroup>
+
+					<t:panelGroup>
+						<p:outputLabel value="Tipo de Logradouro"
+							for="selecaoTipoLogradouro" />
+					</t:panelGroup>
+
+					<t:panelGroup>
+						<p:selectOneMenu id="selecaoTipoLogradouro"
+							value="#{cadastroEnderecoBean.endereco.tipoLogradouro}"
+							label="Tipo de Logradouro" filter="true"
+							filterMatchMode="contains" style="vertical-align: middle;width: 170px">
+							<f:selectItem itemLabel="Selecione" noSelectionOption="true" />
+							<f:selectItems
+								value="#{cadastroEnderecoBean.listaTipoLogradouro}"
+								var="tipoLogradouro" itemValue="#{TipoLogradouro}"
+								itemLabel="#{TipoLogradouro.descricao}" />
+						</p:selectOneMenu>
+					</t:panelGroup>
+
+					<t:panelGroup>
+						<p:outputLabel value="Logradouro" for="logradouro" />
+					</t:panelGroup>
+
+					<t:panelGroup>
+						<h:inputText id="logradouro" maxlength="240" size="21"
+							value="#{cadastroEnderecoBean.endereco.logradouro}"
+							label="Logradouro">
+						</h:inputText>
+					</t:panelGroup>
+
+					<t:panelGroup>
+						<p:outputLabel value="Bairro" for="bairro" />
+					</t:panelGroup>
+
+					<t:panelGroup>
+						<h:inputText id="bairro" maxlength="240" size="20"
+							value="#{cadastroEnderecoBean.endereco.bairro}" label="Bairro">
+						</h:inputText>
+					</t:panelGroup>
+
+					<t:panelGroup>
+						<p:outputLabel value="CEP" for="cep" />
+					</t:panelGroup>
+
+					<t:panelGroup>
+						<p:inputMask id="cep" maxlength="9" size="20"
+							value="#{cadastroEnderecoBean.endereco.cep}" mask="99999-999"
+							label="CEP">
+						</p:inputMask>
+					</t:panelGroup>
+
+					<t:panelGroup>
+						<p:commandButton value="Salvar"
+							action="#{cadastroEnderecoBean.salvar}" icon="ui-icon-disk"
+							update="@form" />
+					</t:panelGroup>
+				</t:panelGrid>
+			</p:fieldset>
+			<br />
+			<br />
+			<p:fieldset legend="Endereços" toggleable="true"
+				toggleablespeed="500">
+				<p:dataTable value="#{cadastroEnderecoBean.enderecos}"
+					var="endereco" border="1" cellspacing="0" cellpadding="2"
+					paginator="true" rows="10" paginatorPosition="bottom">
+					<p:column headerText="Cidade" sortBy="#{endereco.cidade.nome}">
+						<h:outputText value="#{endereco.cidade.nome}" />
+					</p:column>
+					<p:column headerText="Tipo de Logradouro"
+						sortBy="#{endereco.tipoLogradouro}">
+						<h:outputText value="#{endereco.tipoLogradouro}" />
+					</p:column>
+					<p:column headerText="Logradouro" sortBy="#{endereco.logradouro}">
+						<h:outputText value="#{endereco.logradouro}" />
+					</p:column>
+					<p:column headerText="Bairro" sortBy="#{endereco.bairro}">
+						<h:outputText value="#{endereco.bairro}" />
+					</p:column>
+					<p:column headerText="CEP" sortBy="#{endereco.cep}" width="10%">
+						<h:outputText value="#{endereco.cep}" />
+					</p:column>
+					<p:column width="10%">
+						<p:button icon="ui-icon-pencil" title="Editar"
+							outcome="/CadastroEnderecos">
+							<f:param name="id" value="#{endereco.idEndereco}" />
+						</p:button>
+						<p:commandButton icon="ui-icon-trash" title="Excluir"
+							process="@this" update="@form"
+							action="#{cadastroEnderecoBean.excluir}">
+							<p:confirm header="Exclusão de endereço"
+								message="Deseja excluir o endereço?" icon="ui-icon-alert" />
+							<f:setPropertyActionListener value="#{endereco}"
+								target="#{cadastroEnderecoBean.enderecoSelecionado}" />
+						</p:commandButton>
+						<p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+							<p:commandButton value="Sim" type="button"
+								styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+							<p:commandButton value="Não" type="button"
+								styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+						</p:confirmDialog>
+					</p:column>
+				</p:dataTable>
+			</p:fieldset>
+		</h:form>
+	</ui:define>
+</ui:composition>
